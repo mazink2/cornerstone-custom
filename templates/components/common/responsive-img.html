@@ -56,6 +56,6 @@ pick the best-sized image based on its own understanding of how it will render t
 --}}
 {{#unless lazyload '==' 'disabled'}}data-{{/unless}}srcset="{{getImageSrcset image use_default_sizes=true }}"
 {{else if default_image}}src="{{cdn default_image}}"{{/if}}
-class="{{#unless lazyload '==' 'disabled'}}lazyload{{/unless}}{{#if class}} {{class}}{{/if}}"
+class="{{#unless lazyload '==' 'disabled'}}lazyload{{/unless}}{{#if class}} {{class}}{{/if}}{{#if images.1.data}} fade{{/if}}"
 {{#if lazyload '==' 'lazyload'}}loading="lazy"{{/if}}
 {{otherAttributes}} />

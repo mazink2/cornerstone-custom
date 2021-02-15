@@ -29,6 +29,14 @@
                     lazyload=theme_settings.lazyload_mode
                     default_image=theme_settings.default_image_product
                 }}
+                {{#if images.1.data}}
+                <div class="content">
+                    <img 
+                        alt="{{images.1.alt}}" 
+                        src="{{#replace '{:size}' images.1.data}}640w{{/replace}}"
+                    />
+                </div>
+                {{/if}}
             </div>
         </a>
 
@@ -92,6 +100,7 @@
                 {{> components/common/login-for-pricing}}
             {{/or}}
         </div>
+
         {{> components/products/bulk-discount-rates}}
     </div>
 </article>
