@@ -1,0 +1,49 @@
+// =============================================================================
+// CART BUTTONS (CSS)
+// =============================================================================
+
+.cart-buttons {
+  $p: &;
+  padding: 0 1.5rem;
+
+  &.cart-buttons-desktop {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  &.cart-buttons-mobile {
+    display: none;
+  }
+
+  .hide-btn {
+    display: none;
+  }
+
+  @media (max-width: $screen-medium) {
+    &.cart-buttons-desktop {
+      display: none;
+    }
+    
+    &.cart-buttons-mobile {
+      display: flex;
+      padding: 0;
+      margin-bottom: 1.5rem;
+      flex-direction: column-reverse;
+      justify-content: space-between;
+      
+      button {
+        margin-bottom: .75rem;
+      }
+    }
+  }
+  
+  @media (max-width: $screen-small) {
+    &.cart-buttons-mobile {
+      flex-direction: column-reverse;
+      
+      button {
+        width: 100%;
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{{!--
+
+    This file contains the "Add All To Cart" and "Remove All Items" buttons that will be displayed on category pages.
+    "Remove All Items" will only be visible if there are items in the cart.
+    
+    The only argument to know when using this component is:
+    `class`:
+        The CSS classes to add to the button container. The value must be either "cart-buttons-desktop" for the desktop view 
+        or "cart-buttons-mobile" for the mobile view. If no class is provided, it will default to "cart-buttons-desktop".
+        
+--}}
+
+<div class="cart-buttons {{#if class}}{{class}}{{else}}cart-buttons-desktop{{/if}}">
+  <button class="button button--tertiary button--normal hide-btn remove-all-items-btn">{{lang 'products.remove_all_items'}}</button>
+  <button class="button button--primary button--normal add-all-to-cart-btn">{{lang 'products.add_all_to_cart'}}</button>
+</div>
