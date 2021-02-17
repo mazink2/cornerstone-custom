@@ -68,11 +68,12 @@ export default class Category extends CatalogPage {
 
     // Add all products in current category to cart
     $('[data-button-type="add-all-to-cart"]').on("click", () => {
-      const here = this.getAllProductsAndAddToCart();
+      this.getAllProductsAndAddToCart();
     });
 
+    // Remove all items in cart
     $('[data-button-type="remove-all-items"]').on("click", () => {
-      console.log(this.context);
+      this.removeAllItems();
     });
   }
 
@@ -244,26 +245,30 @@ export default class Category extends CatalogPage {
     })
       .then((res) => res.json())
       .then((json) => {
-        if(json?.lineItems) {
-            const cartQuantity = that.countCartItems(json.lineItems);
-            that.updateCartCounter(cartQuantity);
-
+        if (json?.lineItems) {
+          const cartQuantity = that.countCartItems(json.lineItems);
+          that.updateCartCounter(cartQuantity);
         }
       });
   }
 
   // Update cart details on front end
-  updateCartCounter(quantity) {
+  updateCartCounter(quantity, type = "add") {
     // Update cart counter
     const $body = $("body");
-
     $body.trigger("cart-quantity-update", quantity);
     const $cartCounter = $(".navUser-action .cart-count");
-    $cartCounter.addClass("cart-count--positive");
-
-    this.$addAllToCartBtn.val(this.originalAddBtnVal).prop("disabled", false);
-
     toggleRemoveAllItemsBtn(quantity);
+
+    if (quantity > 0) {
+      $cartCounter.addClass("cart-count--positive");
+      this.$addAllToCartBtn.val(this.originalAddBtnVal).prop("disabled", false);
+    } else {
+      $cartCounter.removeClass("cart-count--positive");
+      this.$removeAllItemsBtn
+        .val(this.originalRemoveBtnVal)
+        .prop("disabled", false);
+    }
   }
 
   // Count number of items in cart
@@ -277,5 +282,41 @@ export default class Category extends CatalogPage {
 
       return acc + a;
     }, 0);
+  }
+
+  // Remove all items from cart
+  removeAllItems() {
+    const that = this;
+    const waitMessage = this.$removeAllItemsBtn.data("waitMessage");
+
+    this.$removeAllItemsBtn
+      .val(waitMessage)
+      .prop("disabled", true);
+
+    fetch("/api/storefront/cart", { credentials: "include" })
+      .then(function (res) {
+        return res.json();
+      })
+      .then(function (cart) {
+        if (!cart || (cart && cart.length == 0)) {
+          // No cart found
+          this.$removeAllItemsBtn
+            .val(this.originalRemoveBtnVal)
+            .prop("disabled", false);
+        } else {
+          fetch(`/api/storefront/carts/${cart[0].id}`, {
+            method: "DELETE",
+            credentials: "same-origin",
+          })
+            .then((res) => {
+              that.updateCartCounter(0);
+            })
+            .catch((err) => {
+              this.$removeAllItemsBtn
+                .val(this.originalRemoveBtnVal)
+                .prop("disabled", false);
+            });
+        }
+      });
   }
 }
