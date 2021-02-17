@@ -1,0 +1,35 @@
+// =============================================================================
+// USER DETAILS (CSS)
+// =============================================================================
+
+.navUser-section.user-details-nav {
+  .navUser-action {
+    position: fixed;
+
+    &:hover,
+    &.is-open {
+      color: stencilColor("navUser-color");
+    }
+  }
+
+  p {
+    margin: 0;
+  }
+
+  @media (max-width: $screen-medium) {
+    display: none;
+  }
+}
+
+.user-details-sidebar {
+  font-weight: 700;
+  font-size: fontSize("smaller");
+  
+  border-bottom: 1px solid $navPages-list--user-borderColor;
+  margin-bottom: spacing("single");
+  padding-bottom: spacing("half");
+  
+  p {
+    margin-bottom: spacing("quarter");
+  }
+}

@@ -1,0 +1,17 @@
+{{#if customer}}
+  {{#if type '===' 'navbar'}}
+    <ul class="navUser-section user-details-nav">
+      <div class="user-details-nav-content navUser-action">
+        <p>{{customer.name}}</p>
+        <p>{{customer.email}}</p>
+        <p>{{customer.phone}}</p>
+      </div>
+    </ul>
+  {{else if type '===' 'sidebar'}}
+    <div class="user-details-sidebar">
+      <p>{{customer.name}}</p>
+      <p>{{customer.email}}</p>
+      <p>{{customer.phone}}</p>
+    </div>
+  {{/if}}
+{{/if}}
