@@ -355,7 +355,7 @@
     "/assets/scss/vendor"
   ],
   "resources": {
-    "cart": false,
+    "cart": true,
     "bulk_discount_rates": false,
     "shop_by_brand": {
       "limit": 10
