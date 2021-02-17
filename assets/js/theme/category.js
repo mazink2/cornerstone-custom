@@ -4,6 +4,7 @@ import compareProducts from "./global/compare-products";
 import FacetedSearch from "./common/faceted-search";
 import { createTranslationDictionary } from "../theme/common/utils/translations-utils";
 import { toggleRemoveAllItemsBtn } from "./global/cart-preview";
+import swal from "./global/sweet-alert";
 
 export default class Category extends CatalogPage {
   constructor(context) {
@@ -13,6 +14,10 @@ export default class Category extends CatalogPage {
     this.originalAddBtnVal = this.$addAllToCartBtn.val();
     this.$removeAllItemsBtn = $(".remove-all-items-btn");
     this.originalRemoveBtnVal = this.$removeAllItemsBtn.val();
+    this.itemsAddedMsg = "All category items added to cart.";
+    this.itemsRemovedMsg = "All items removed from cart.";
+    this.itemsAddedErrorMsg = "Unable to add items.";
+    this.itemsRemovedErrorMsg = "Unable to remove items.";
   }
 
   setLiveRegionAttributes($element, roleType, ariaLiveStatus) {
@@ -139,13 +144,15 @@ export default class Category extends CatalogPage {
   }
 
   // Get all products and add them to cart with addAllToCart method
-  getAllProductsAndAddToCart(func) {
+  getAllProductsAndAddToCart() {
     const categoryUrl = this.$addAllToCartBtn.data("categoryUrl");
     const bearerToken = this.context.bearerToken;
     const waitMessage = this.$addAllToCartBtn.data("waitMessage");
 
+    // Disable add all items button and change text to loading message
     this.$addAllToCartBtn.val(waitMessage).prop("disabled", true);
 
+    // Get all products in current category
     fetch("/graphql", {
       method: "POST",
       credentials: "same-origin",
@@ -194,15 +201,23 @@ export default class Category extends CatalogPage {
           this.$addAllToCartBtn
             .val(this.originalAddBtnVal)
             .prop("disabled", false);
+          swal.fire({
+            text: this.itemsAddedErrorMsg,
+            icon: "error",
+          });
         }
       });
   }
 
+  // Take products data from getAllProductsAndAddToCart method and add it to cart
   addAllToCart(data) {
     const that = this;
     const lineItems = [];
 
+    // Create lineItems data to be sent in request
     data.forEach((item) => {
+      // Set first variant for each product as the default so that adding products
+      // with multiple variants to the cart doesn't produce any errors
       const defaultVariant = item.node.variants.edges[0].node.entityId;
 
       const itemObj = {
@@ -214,16 +229,17 @@ export default class Category extends CatalogPage {
       lineItems.push(itemObj);
     });
 
-    // Add items to cart
+    // Check to see if a cart already exists
     fetch("/api/storefront/cart", { credentials: "include" })
       .then(function (res) {
         return res.json();
       })
       .then(function (cart) {
         if (!cart || (cart && cart.length == 0)) {
-          // Cart is empty, use POST /api/storefront/cart
+          // Create a new cart if there isn't one already and add products to it
           that.addToCartRequest(`/api/storefront/carts`, lineItems);
         } else {
+          // Add products to already existing cart
           that.addToCartRequest(
             `/api/storefront/carts/${cart[0].id}/items`,
             lineItems
@@ -232,6 +248,7 @@ export default class Category extends CatalogPage {
       });
   }
 
+  // Make request to add all the products to the cart using data received from addAllToCart method
   addToCartRequest(url, lineItems) {
     const that = this;
 
@@ -248,11 +265,23 @@ export default class Category extends CatalogPage {
         if (json?.lineItems) {
           const cartQuantity = that.countCartItems(json.lineItems);
           that.updateCartCounter(cartQuantity);
+          swal.fire({
+            text: that.itemsAddedMsg,
+            icon: "success",
+          });
+        } else {
+          this.$addAllToCartBtn
+            .val(this.originalAddBtnVal)
+            .prop("disabled", false);
+          swal.fire({
+            text: this.itemsAddedErrorMsg,
+            icon: "error",
+          });
         }
       });
   }
 
-  // Update cart details on front end
+  // Update cart details on front end once data has been added to the cart
   updateCartCounter(quantity, type = "add") {
     // Update cart counter
     const $body = $("body");
@@ -260,18 +289,27 @@ export default class Category extends CatalogPage {
     const $cartCounter = $(".navUser-action .cart-count");
     toggleRemoveAllItemsBtn(quantity);
 
+    // Show/hide cart count
     if (quantity > 0) {
       $cartCounter.addClass("cart-count--positive");
       this.$addAllToCartBtn.val(this.originalAddBtnVal).prop("disabled", false);
+      swal.fire({
+        text: this.itemsAddedMsg,
+        icon: "success",
+      });
     } else {
       $cartCounter.removeClass("cart-count--positive");
       this.$removeAllItemsBtn
         .val(this.originalRemoveBtnVal)
         .prop("disabled", false);
+      swal.fire({
+        text: this.itemsRemovedMsg,
+        icon: "success",
+      });
     }
   }
 
-  // Count number of items in cart
+  // Helper method to count number of items in cart
   countCartItems(lineItems) {
     return Object.keys(lineItems).reduce((a, b) => {
       let acc = 0;
@@ -289,9 +327,8 @@ export default class Category extends CatalogPage {
     const that = this;
     const waitMessage = this.$removeAllItemsBtn.data("waitMessage");
 
-    this.$removeAllItemsBtn
-      .val(waitMessage)
-      .prop("disabled", true);
+    // Disable remove all items button and change text to loading message
+    this.$removeAllItemsBtn.val(waitMessage).prop("disabled", true);
 
     fetch("/api/storefront/cart", { credentials: "include" })
       .then(function (res) {
@@ -303,7 +340,12 @@ export default class Category extends CatalogPage {
           this.$removeAllItemsBtn
             .val(this.originalRemoveBtnVal)
             .prop("disabled", false);
+          swal.fire({
+            text: this.itemsRemovedErrorMsg,
+            icon: "error",
+          });
         } else {
+          // Delete cart request
           fetch(`/api/storefront/carts/${cart[0].id}`, {
             method: "DELETE",
             credentials: "same-origin",
@@ -315,6 +357,10 @@ export default class Category extends CatalogPage {
               this.$removeAllItemsBtn
                 .val(this.originalRemoveBtnVal)
                 .prop("disabled", false);
+              swal.fire({
+                text: this.itemsRemovedErrorMsg,
+                icon: "error",
+              });
             });
         }
       });
