@@ -3,6 +3,7 @@
 // =============================================================================
 
 .cart-buttons {
+  
   $p: &;
   padding: 0 1.5rem;
 
@@ -31,7 +32,7 @@
       flex-direction: column-reverse;
       justify-content: space-between;
       
-      button {
+      input {
         margin-bottom: .75rem;
       }
     }
@@ -41,7 +42,7 @@
     &.cart-buttons-mobile {
       flex-direction: column-reverse;
       
-      button {
+      input {
         width: 100%;
       }
     }
