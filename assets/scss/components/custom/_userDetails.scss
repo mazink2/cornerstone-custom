@@ -3,8 +3,12 @@
 // =============================================================================
 
 .navUser-section.user-details-nav {
+  position: relative;
   .navUser-action {
-    position: fixed;
+    font-size: fontSize("smaller");
+    position: absolute;
+    min-width: 300px;
+    text-transform: none;  
 
     &:hover,
     &.is-open {
@@ -22,14 +26,20 @@
 }
 
 .user-details-sidebar {
-  font-weight: 700;
-  font-size: fontSize("smaller");
-  
-  border-bottom: 1px solid $navPages-list--user-borderColor;
-  margin-bottom: spacing("single");
-  padding-bottom: spacing("half");
-  
-  p {
-    margin-bottom: spacing("quarter");
+  display: none;
+
+  @media (max-width: $screen-medium) {
+    display: block;
+
+    font-weight: 700;
+    font-size: fontSize("smaller");
+
+    border-bottom: 1px solid $navPages-list--user-borderColor;
+    margin-bottom: spacing("single");
+    padding-bottom: spacing("half");
+
+    p {
+      margin-bottom: spacing("quarter");
+    }
   }
 }
