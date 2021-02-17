@@ -65,7 +65,6 @@ export default function (secureBaseUrl, cartId) {
       })
       .catch((err) => {
         toggleRemoveAllItemsBtn(0);
-        console.log(err);
       });
   });
 
