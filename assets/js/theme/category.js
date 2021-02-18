@@ -167,7 +167,7 @@ export default class Category extends CatalogPage {
                     route(path: "${categoryUrl}") {
                         node {
                             ... on Category {
-                                products {
+                                products(first:50) {
                                     edges {
                                         node {
                                             entityId
